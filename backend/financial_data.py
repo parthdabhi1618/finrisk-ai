@@ -1,81 +1,119 @@
-import requests
-import os
 from datetime import datetime
 
-API_KEY = os.getenv("FMP_API_KEY")
 
-BASE_URL = "https://financialmodelingprep.com/api/v3"
+DEMO_COMPANIES = {
+    "RELIANCE": {
+        "company_name": "Reliance Industries",
+        "features": {
+            "X1": 150000,
+            "X2": 90000,
+            "X3": 5000,
+            "X4": 20000,
+            "X5": 25000,
+            "X6": 15000,
+            "X7": 30000,
+            "X8": 200000000000,
+            "X9": 180000,
+            "X10": 300000,
+            "X11": 50000,
+            "X12": 18000,
+            "X13": 70000,
+            "X14": 40000,
+            "X15": 80000,
+            "X16": 180000,
+            "X17": 120000,
+            "X18": 90000,
+        },
+    },
+    "TCS": {
+        "company_name": "Tata Consultancy Services",
+        "features": {
+            "X1": 60000,
+            "X2": 20000,
+            "X3": 2000,
+            "X4": 25000,
+            "X5": 1000,
+            "X6": 22000,
+            "X7": 25000,
+            "X8": 150000000000,
+            "X9": 100000,
+            "X10": 120000,
+            "X11": 10000,
+            "X12": 23000,
+            "X13": 60000,
+            "X14": 15000,
+            "X15": 50000,
+            "X16": 100000,
+            "X17": 40000,
+            "X18": 30000,
+        },
+    },
+    "ZOMATO": {
+        "company_name": "Zomato Ltd",
+        "features": {
+            "X1": 8000,
+            "X2": 3000,
+            "X3": 500,
+            "X4": 1000,
+            "X5": 100,
+            "X6": -200,
+            "X7": 1200,
+            "X8": 15000000000,
+            "X9": 7000,
+            "X10": 20000,
+            "X11": 2000,
+            "X12": 800,
+            "X13": 3000,
+            "X14": 2500,
+            "X15": -1000,
+            "X16": 7000,
+            "X17": 6000,
+            "X18": 5000,
+        },
+    },
+    "ADANIENT": {
+        "company_name": "Adani Enterprises",
+        "features": {
+            "X1": 30000,
+            "X2": 15000,
+            "X3": 2000,
+            "X4": 5000,
+            "X5": 3000,
+            "X6": 2500,
+            "X7": 8000,
+            "X8": 80000000000,
+            "X9": 40000,
+            "X10": 90000,
+            "X11": 25000,
+            "X12": 4500,
+            "X13": 12000,
+            "X14": 10000,
+            "X15": 20000,
+            "X16": 40000,
+            "X17": 45000,
+            "X18": 20000,
+        },
+    },
+}
 
 
 def fetch_indian_company_data(symbol: str):
-    """
-    Fetch financial data using Financial Modeling Prep API.
-    """
 
     ticker = symbol.upper()
 
-    try:
-        # Balance Sheet
-        bs_url = f"{BASE_URL}/balance-sheet-statement/{ticker}?limit=1&apikey={API_KEY}"
-        bs_res = requests.get(bs_url)
-        bs_data = bs_res.json()
+    if ticker not in DEMO_COMPANIES:
+        raise ValueError(
+            f"Demo data not available for {ticker}. "
+            f"Try: {', '.join(DEMO_COMPANIES.keys())}"
+        )
 
-        # Income Statement
-        is_url = f"{BASE_URL}/income-statement/{ticker}?limit=1&apikey={API_KEY}"
-        is_res = requests.get(is_url)
-        is_data = is_res.json()
+    company = DEMO_COMPANIES[ticker]
 
-        # Cashflow
-        cf_url = f"{BASE_URL}/cash-flow-statement/{ticker}?limit=1&apikey={API_KEY}"
-        cf_res = requests.get(cf_url)
-        cf_data = cf_res.json()
-
-        # Company profile
-        profile_url = f"{BASE_URL}/profile/{ticker}?apikey={API_KEY}"
-        profile_res = requests.get(profile_url)
-        profile_data = profile_res.json()
-
-        if not bs_data or not is_data:
-            raise ValueError(f"No financial data found for {ticker}")
-
-        bs = bs_data[0]
-        is_ = is_data[0]
-        cf = cf_data[0] if cf_data else {}
-
-        company_name = profile_data[0]["companyName"] if profile_data else ticker
-        market_cap = profile_data[0]["mktCap"] if profile_data else 0
-
-    except Exception as e:
-        raise ValueError(f"FMP API error for {ticker}: {str(e)}")
-
-    data = {
-        "year": datetime.now().year,
-
-        "X1": bs.get("totalCurrentAssets", 0),
-        "X2": is_.get("costOfRevenue", 0),
-        "X3": cf.get("depreciationAndAmortization", 0),
-        "X4": is_.get("ebitda", 0),
-        "X5": bs.get("inventory", 0),
-        "X6": is_.get("netIncome", 0),
-        "X7": bs.get("netReceivables", 0),
-        "X8": market_cap,
-        "X9": is_.get("revenue", 0),
-        "X10": bs.get("totalAssets", 0),
-        "X11": bs.get("longTermDebt", 0),
-        "X12": is_.get("operatingIncome", 0),
-        "X13": is_.get("grossProfit", 0),
-        "X14": bs.get("totalCurrentLiabilities", 0),
-        "X15": bs.get("retainedEarnings", 0),
-        "X16": is_.get("revenue", 0),
-        "X17": bs.get("totalLiabilities", 0),
-        "X18": is_.get("operatingExpenses", 0),
-    }
-
-    # Convert all values to float
-    data = {k: float(v) if v is not None else 0.0 for k, v in data.items()}
+    data = company["features"].copy()
+    data["year"] = datetime.now().year
 
     return {
-        "company_name": company_name,
+        "company_name": company["company_name"],
         "symbol": ticker,
         "features": data
     }
