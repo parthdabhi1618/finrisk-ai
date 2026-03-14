@@ -166,8 +166,8 @@ Pipeline steps include:
 
 ## Live Demo
 
-Frontend: Coming soon
-Backend API: Coming soon
+Frontend: https://finrisk-ai-sigma.vercel.app/
+Backend API: https://finrisk-ai-ydr5.onrender.com
 
 ---
 
