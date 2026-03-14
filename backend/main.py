@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, List
-import model_utils
-import financial_data
+from backend import model_utils
+from backend import financial_data
 
 app = FastAPI(title="Bankruptcy Prediction API")
 
