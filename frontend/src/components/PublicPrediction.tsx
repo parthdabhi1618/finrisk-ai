@@ -25,7 +25,7 @@ const PublicPrediction: React.FC = () => {
     setResult(null);
 
     try {
-      const response = await axios.get(`http://localhost:8000/predict/public/${ticker}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/predict/public/${ticker}`);
       setResult(response.data);
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Failed to fetch company data. Ensure it is a valid Indian ticker (e.g. RELIANCE, TCS).');
