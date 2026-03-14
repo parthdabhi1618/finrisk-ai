@@ -1,6 +1,8 @@
 import yfinance as yf
 import pandas as pd
+import time
 from datetime import datetime
+
 
 def fetch_indian_company_data(symbol: str):
     """
@@ -15,14 +17,26 @@ def fetch_indian_company_data(symbol: str):
 
     ticker = yf.Ticker(ticker_symbol)
 
+    # small delay to avoid Yahoo blocking rapid requests
+    time.sleep(0.5)
+
     try:
         balance_sheet = ticker.balance_sheet
         income_stmt = ticker.income_stmt
         cashflow = ticker.cashflow
-        info = ticker.get_info() if hasattr(ticker, "get_info") else ticker.info
 
-        if not info:
-            raise ValueError("Yahoo Finance returned empty company info")
+        # safer than ticker.info
+        try:
+            fast_info = ticker.fast_info
+            info = {
+                "marketCap": fast_info.get("market_cap", 0),
+                "longName": symbol
+            }
+        except Exception:
+            info = {
+                "marketCap": 0,
+                "longName": symbol
+            }
 
         if balance_sheet.empty or income_stmt.empty:
             raise ValueError(f"Could not find financial statements for {ticker_symbol}")
@@ -53,10 +67,14 @@ def fetch_indian_company_data(symbol: str):
         "X14": bs.get("Total Current Liabilities", 0),
         "X15": bs.get("Retained Earnings", 0),
         "X16": is_.get("Total Revenue", 0),
-        "X17": bs.get("Total Liabilities Net Minority Interest", bs.get("Total Liabilities", 0)),
+        "X17": bs.get(
+            "Total Liabilities Net Minority Interest",
+            bs.get("Total Liabilities", 0)
+        ),
         "X18": is_.get("Total Operating Expenses", 0),
     }
 
+    # Convert everything to float
     data = {k: float(v) if v is not None else 0.0 for k, v in data.items()}
 
     return {
