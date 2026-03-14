@@ -26,7 +26,8 @@ FEATURE_MAPPING = {
 
 TOP_FEATURES = ["X6", "X10", "X17", "X1", "X4", "X11"] 
 
-ARTIFACT_PATH = Path("../bankruptcy_prediction_artifact.joblib")
+BASE_DIR = Path(__file__).resolve().parent
+ARTIFACT_PATH = BASE_DIR / "bankruptcy_prediction_artifact.joblib"
 
 def load_model():
     if not ARTIFACT_PATH.exists():
