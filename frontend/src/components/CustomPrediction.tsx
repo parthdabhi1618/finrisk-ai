@@ -40,7 +40,7 @@ const CustomPrediction: React.FC = () => {
   const [result, setResult] = useState<CustomPredictionResponse | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/info').then(res => setModelInfo(res.data));
+    axios.get(`${import.meta.env.VITE_API_URL}/info`).then(res => setModelInfo(res.data));
   }, []);
 
   const loadDemoData = () => {
@@ -52,7 +52,7 @@ const CustomPrediction: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/predict/custom', formData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/predict/custom`, formData);
       setResult(response.data);
     } catch (err) {
       console.error(err);
