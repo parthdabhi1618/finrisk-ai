@@ -168,9 +168,3 @@ Pipeline steps include:
 
 Frontend: https://finrisk-ai-sigma.vercel.app/
 Backend API: https://finrisk-ai-ydr5.onrender.com
-
----
-
-## Author
-
-FinRisk AI was developed as a Machine Learning and Full Stack project demonstrating how predictive models can be deployed as interactive web applications.
