@@ -14,14 +14,17 @@ def fetch_indian_company_data(symbol: str):
         
     ticker = yf.Ticker(ticker_symbol)
     
-    # Get the latest annual statements
     try:
         balance_sheet = ticker.balance_sheet
         income_stmt = ticker.income_stmt
         cashflow = ticker.cashflow
-        info = ticker.info
-    except Exception as e:
-        raise ValueError(f"Error fetching data for {ticker_symbol}: {str(e)}")
+        info = ticker.get_info() if hasattr(ticker, "get_info") else ticker.info
+
+    if not info:
+        raise ValueError("Yahoo Finance returned empty company info")
+
+except Exception as e:
+    raise ValueError(f"Error fetching data for {ticker_symbol}: {str(e)}")
 
     if balance_sheet.empty or income_stmt.empty:
         raise ValueError(f"Could not find financial statements for {ticker_symbol}")
